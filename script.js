@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Countdown timer
-    const targetDate = new Date('2024-01-01T00:00:00');
+    const targetDate = new Date('2025-04-16T18:00:00');
     const daysElement = document.getElementById('days');
     const hoursElement = document.getElementById('hours');
     const minutesElement = document.getElementById('minutes');
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeDifference = targetDate - now;
 
         if (timeDifference <= 0) {
-            comingSoonElement.textContent = 'We Have Arrived!';
+            comingSoonElement.textContent = 'We Are Arriving Soon!';
             daysElement.textContent = '00';
             hoursElement.textContent = '00';
             minutesElement.textContent = '00';
@@ -94,7 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Immediately update countdown when page loads
     updateCountdown();
+    // Then update every second
     setInterval(updateCountdown, 1000);
 
     // Initialize Supabase client
