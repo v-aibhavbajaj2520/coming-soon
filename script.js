@@ -1,3 +1,6 @@
+// Import DOMPurify
+import DOMPurify from 'dompurify';
+
 document.addEventListener('DOMContentLoaded', () => {
     // Create random twinkling stars
     const starsContainer = document.querySelector('.stars');
@@ -125,25 +128,68 @@ document.addEventListener('DOMContentLoaded', () => {
         notifyBtn.style.display = 'none';
     });
 
+    // Rate limiting setup
+    const submissionAttempts = new Map();
+    const MAX_ATTEMPTS = 5;
+    const BLOCK_DURATION = 100 * 60 * 1000; // 100 minutes in milliseconds
+
+    function isRateLimited(email) {
+        const now = Date.now();
+        const userAttempts = submissionAttempts.get(email) || { count: 0, timestamp: now };
+        
+        if (userAttempts.count >= MAX_ATTEMPTS) {
+            if (now - userAttempts.timestamp < BLOCK_DURATION) {
+                return true;
+            } else {
+                // Reset after block duration
+                userAttempts.count = 0;
+                userAttempts.timestamp = now;
+            }
+        }
+        
+        userAttempts.count++;
+        submissionAttempts.set(email, userAttempts);
+        return false;
+    }
+
     // Handle form submission
     submitBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         console.log('Submit button clicked');
         
-        const name = nameInput.value.trim();
-        const email = emailInput.value.trim();
+        // Sanitize user inputs
+        const name = DOMPurify.sanitize(nameInput.value.trim());
+        const email = DOMPurify.sanitize(emailInput.value.trim());
         console.log('Name entered:', name);
         console.log('Email entered:', email);
         
         if (name && email) {
             try {
+                // Check rate limiting
+                if (isRateLimited(email)) {
+                    throw new Error('Too many attempts. Please try again after 100 minutes.');
+                }
+
+                // Strong input validation
+                if (name.length < 3 || name.length > 18) {
+                    throw new Error('Name must be between 3 and 18 characters');
+                }
+
+                if (!/^[a-zA-Z\s]+$/.test(name)) {
+                    throw new Error('Name can only contain letters and spaces');
+                }
+
                 // Validate email format
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(email)) {
                     throw new Error('Please enter a valid email address');
                 }
 
-                console.log('Attempting to insert data into Supabase...');
+                if (email.length > 30) {
+                    throw new Error('Email address is too long');
+                }
+
+                console.log('Attempting to insert data into Database...');
                 
                 // Insert data into Supabase
                 const { data, error } = await supabase
@@ -164,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Data successfully inserted:', data);
                 
                 // Show success message
-                notification.textContent = 'Thank you! We will notify you when we go live.';
+                notification.textContent = DOMPurify.sanitize('Thank you! We will notify you when we go live.');
                 notification.style.display = 'block';
                 notification.className = 'notification success';
                 
@@ -176,13 +222,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 emailInput.value = '';
             } catch (error) {
                 console.error('Error inserting data:', error);
-                notification.textContent = error.message || 'Sorry, there was an error. Please try again.';
+                notification.textContent = DOMPurify.sanitize(error.message || 'Sorry, there was an error. Please try again.');
                 notification.style.display = 'block';
                 notification.className = 'notification error';
             }
         } else {
             // Show error message
-            notification.textContent = 'Please enter both name and email.';
+            notification.textContent = DOMPurify.sanitize('Please enter both name and email.');
             notification.style.display = 'block';
             notification.className = 'notification error';
         }
