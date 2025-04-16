@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Countdown timer
-    const targetDate = new Date('2025-04-16T18:00:00');
+    const targetDate = new Date('2025-04-16T20:00:00');
     const daysElement = document.getElementById('days');
     const hoursElement = document.getElementById('hours');
     const minutesElement = document.getElementById('minutes');
