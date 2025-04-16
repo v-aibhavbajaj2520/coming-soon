@@ -117,6 +117,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submitBtn');
     const notification = document.getElementById('notification');
 
+    // Add real-time validation for name input
+    nameInput.addEventListener('input', (e) => {
+        const value = e.target.value;
+        if (value.length > 15) {
+            notification.textContent = DOMPurify.sanitize('Name cannot be longer than 15 characters');
+            notification.style.display = 'block';
+            notification.className = 'notification error';
+        } else if (value.length < 3 && value.length > 0) {
+            notification.textContent = DOMPurify.sanitize('Name must be at least 3 characters');
+            notification.style.display = 'block';
+            notification.className = 'notification error';
+        } else {
+            notification.style.display = 'none';
+        }
+    });
+
+    // Add real-time validation for email input
+    emailInput.addEventListener('input', (e) => {
+        const value = e.target.value;
+        if (value.length > 30) {
+            notification.textContent = DOMPurify.sanitize('Email cannot be longer than 30 characters');
+            notification.style.display = 'block';
+            notification.className = 'notification error';
+        } else {
+            notification.style.display = 'none';
+        }
+    });
+
     // Initially hide the form and notification
     emailForm.style.display = 'none';
     notification.style.display = 'none';
@@ -176,8 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                      .trim();                     // Remove extra spaces
 
                 // Strong input validation
-                if (sanitizedName.length < 3 || sanitizedName.length > 18) {
-                    throw new Error('Name must be between 3 and 18 characters');
+                if (sanitizedName.length < 3 || sanitizedName.length > 15) {
+                    throw new Error('Name must be between 3 and 15 characters');
                 }
 
                 if (!/^[a-zA-Z\s]+$/.test(sanitizedName)) {
