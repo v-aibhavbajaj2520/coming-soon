@@ -170,32 +170,42 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error('Too many attempts. Please try again after 100 minutes.');
                 }
 
+                // Remove template literals and sanitize name
+                let sanitizedName = name.replace(/{{.*?}}/g, '')  // Remove template literals
+                                     .replace(/[^a-zA-Z\s]/g, '') // Keep only letters and spaces
+                                     .trim();                     // Remove extra spaces
+
                 // Strong input validation
-                if (name.length < 3 || name.length > 18) {
+                if (sanitizedName.length < 3 || sanitizedName.length > 18) {
                     throw new Error('Name must be between 3 and 18 characters');
                 }
 
-                if (!/^[a-zA-Z\s]+$/.test(name)) {
+                if (!/^[a-zA-Z\s]+$/.test(sanitizedName)) {
                     throw new Error('Name can only contain letters and spaces');
                 }
 
+                // Sanitize email
+                let sanitizedEmail = email.replace(/{{.*?}}/g, '')  // Remove template literals
+                                        .replace(/[^a-zA-Z0-9@._-]/g, '') // Keep only valid email characters
+                                        .trim();                     // Remove extra spaces
+
                 // Validate email format
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
+                if (!emailRegex.test(sanitizedEmail)) {
                     throw new Error('Please enter a valid email address');
                 }
 
-                if (email.length > 30) {
+                if (sanitizedEmail.length > 30) {
                     throw new Error('Email address is too long');
                 }
 
                 console.log('Attempting to insert data into Database...');
                 
-                // Insert data into Supabase
+                // Insert data into Supabase with sanitized values
                 const { data, error } = await supabase
                     .from('subscribers')
                     .insert([
-                        { name: name, email: email }
+                        { name: sanitizedName, email: sanitizedEmail }
                     ])
                     .select();
                 
