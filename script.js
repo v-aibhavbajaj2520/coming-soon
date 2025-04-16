@@ -1,7 +1,10 @@
-// Import DOMPurify
-import DOMPurify from 'dompurify';
+// Use DOMPurify from CDN
+const DOMPurify = window.DOMPurify;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize DOMPurify
+    const purify = window.DOMPurify;
+
     // Create random twinkling stars
     const starsContainer = document.querySelector('.stars');
     const starCount = 150;
@@ -121,11 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {
     nameInput.addEventListener('input', (e) => {
         const value = e.target.value;
         if (value.length > 15) {
-            notification.textContent = DOMPurify.sanitize('Name cannot be longer than 15 characters');
+            notification.textContent = purify.sanitize('Name cannot be longer than 15 characters');
             notification.style.display = 'block';
             notification.className = 'notification error';
         } else if (value.length < 3 && value.length > 0) {
-            notification.textContent = DOMPurify.sanitize('Name must be at least 3 characters');
+            notification.textContent = purify.sanitize('Name must be at least 3 characters');
             notification.style.display = 'block';
             notification.className = 'notification error';
         } else {
@@ -137,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     emailInput.addEventListener('input', (e) => {
         const value = e.target.value;
         if (value.length > 30) {
-            notification.textContent = DOMPurify.sanitize('Email cannot be longer than 30 characters');
+            notification.textContent = purify.sanitize('Email cannot be longer than 30 characters');
             notification.style.display = 'block';
             notification.className = 'notification error';
         } else {
@@ -186,8 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Submit button clicked');
         
         // Sanitize user inputs
-        const name = DOMPurify.sanitize(nameInput.value.trim());
-        const email = DOMPurify.sanitize(emailInput.value.trim());
+        const name = purify.sanitize(nameInput.value.trim());
+        const email = purify.sanitize(emailInput.value.trim());
         console.log('Name entered:', name);
         console.log('Email entered:', email);
         
@@ -248,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Data successfully inserted:', data);
                 
                 // Show success message
-                notification.textContent = DOMPurify.sanitize('Thank you! We will notify you when we go live.');
+                notification.textContent = purify.sanitize('Thank you! We will notify you when we go live.');
                 notification.style.display = 'block';
                 notification.className = 'notification success';
                 
@@ -260,13 +263,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 emailInput.value = '';
             } catch (error) {
                 console.error('Error inserting data:', error);
-                notification.textContent = DOMPurify.sanitize(error.message || 'Sorry, there was an error. Please try again.');
+                notification.textContent = purify.sanitize(error.message || 'Sorry, there was an error. Please try again.');
                 notification.style.display = 'block';
                 notification.className = 'notification error';
             }
         } else {
             // Show error message
-            notification.textContent = DOMPurify.sanitize('Please enter both name and email.');
+            notification.textContent = purify.sanitize('Please enter both name and email.');
             notification.style.display = 'block';
             notification.className = 'notification error';
         }
